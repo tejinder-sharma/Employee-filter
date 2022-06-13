@@ -1,25 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState, useEffect } from 'react';
+import CardList from './Components/card-list/cardList.component';
+import SearchBox from './Components/search-box/serach-box.component';
+import './App.css'
 
-function App() {
-  return (
+const App = () => {
+  const [searchField, setSearchField] = useState('')
+  const [employees, setEmployees] = useState([])
+  const [filteredEmployees, setFilteredEmployees] = useState(employees)
+  const [title, setTitle] = useState('')
+  console.log('rendered')
+
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/users')
+    .then(response => response.json())
+    .then(users => setEmployees(users))
+    }, [])
+
+    useEffect(() => {
+      const newFilteredEmployees = employees.filter((user) => {
+        return(
+          user.name.toLocaleLowerCase().includes(searchField)
+        )
+        
+      })
+      setFilteredEmployees(newFilteredEmployees)
+     
+
+    }, [employees, searchField])
+
+  const onSearchChange = (event) => {
+    const searchFieldString = event.target.value.toLocaleLowerCase();
+    setSearchField(searchFieldString)
+     }
+
+     const onTitleChange = (event) => {
+      const searchFieldString = event.target.value;
+      setTitle(searchFieldString)
+       }
+  return(
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+       <h1>{title}</h1>
+       <SearchBox placeholder="Search Employee" onChangeHandler={onSearchChange} />
+       <br />
+       <SearchBox placeholder="Set Title" onChangeHandler={onTitleChange} />
+       <CardList employees={filteredEmployees} />
+         
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
